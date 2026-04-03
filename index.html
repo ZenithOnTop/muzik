@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zenith Cinematic Player</title>
+    <title>Zenith Cinematic Player | Aesthetic</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;600&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; background: #000; overflow: hidden; font-family: sans-serif; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Montserrat', sans-serif; }
         .container { position: relative; width: 100vw; height: 100vh; }
         
-        /* Video Background */
+        /* Video Background - Fullscreen & Pointer Anti-Klik */
         iframe {
             position: absolute; top: 50%; left: 50%;
             width: 100vw; height: 56.25vw; /* Ratio 16:9 */
@@ -16,37 +18,109 @@
             pointer-events: none; border: none;
         }
 
+        /* Overlay Gelap dengan Efek Radial Blur Sedikit */
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 1;
+            background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+            z-index: 1;
         }
 
+        /* Header Tulisan "CINEMATIC MODE" */
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+        }
+        .header h1 {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            font-weight: 100;
+            margin: 0;
+        }
+
+        /* Panel Input - Minimalis Glassmorphism di Sudut Kiri Bawah */
         .ui {
-            position: relative; z-index: 2; color: white; text-align: center;
-            top: 40%;
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         }
 
-        input { padding: 10px; width: 300px; border-radius: 5px; border: none; }
-        button { padding: 10px 20px; border-radius: 5px; border: none; cursor: pointer; background: #00f2ff; font-weight: bold; }
-        
-        h1 { letter-spacing: 5px; text-shadow: 0 0 10px #00f2ff; font-size: 1.2rem; }
+        /* Teks Status */
+        .status-text {
+            color: rgba(0, 242, 255, 0.5);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            display: none; /* Disembunyikan dulu */
+        }
+
+        /* Input Minimalis */
+        input {
+            padding: 5px 8px;
+            width: 180px;
+            border-radius: 5px;
+            border: none;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 0.7rem;
+            outline: none;
+            transition: 0.3s;
+        }
+        input:focus {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00f2ff;
+        }
+
+        /* Tombol Biru Neon */
+        button {
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            background: #00f2ff;
+            color: #000;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+            transition: 0.3s;
+        }
+        button:hover {
+            box-shadow: 0 0 20px #00f2ff;
+            background: white;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="overlay"></div>
         
+        <div class="header">
+            <h1>CINEMATIC MODE</h1>
+        </div>
+
         <iframe id="videoPlayer" 
             src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&controls=0&loop=1&playlist=jfKfPfyJRdk" 
             allow="autoplay">
         </iframe>
 
         <div class="ui">
-            <h1>CINEMATIC MODE</h1>
-            <br>
+            <span class="status-text" id="status-display">NOW GRINDING</span>
             <input type="text" id="linkInput" placeholder="Paste Link YouTube Disini...">
             <button onclick="updateVideo()">PLAY</button>
-            <p style="font-size: 0.7rem; opacity: 0.5; margin-top: 20px;">Catatan: Browser akan Mute video pertama kali. Klik PLAY untuk ganti lagu & suara.</p>
         </div>
     </div>
 
@@ -55,6 +129,7 @@
             const input = document.getElementById('linkInput').value;
             let id = "";
             
+            // Logika ambil ID Video dari Link
             if (input.includes("v=")) {
                 id = input.split('v=')[1].split('&')[0];
             } else if (input.includes("youtu.be/")) {
@@ -64,9 +139,20 @@
             }
 
             if(id) {
-                // Ganti sumber video tanpa API rumit
+                // Ganti video tanpa Mute (Suara nyala pas diganti)
                 const newSrc = `https://www.youtube.com/embed/${id}?autoplay=1&controls=0&loop=1&playlist=${id}`;
                 document.getElementById('videoPlayer').src = newSrc;
+                
+                // Ubah status dan sembunyikan kotak input
+                document.getElementById('status-display').style.display = 'block';
+                document.getElementById('linkInput').style.display = 'none';
+                document.getElementById('status-display').innerText = `NEW TRACK LOADED`;
+                
+                // Kembalikan kotak input kalau diklik statusnya
+                document.getElementById('status-display').onclick = function() {
+                    document.getElementById('linkInput').style.display = 'block';
+                    document.getElementById('status-display').style.display = 'none';
+                }
             }
         }
     </script>
