@@ -3,147 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zenith Muzik - Dashboard</title>
+    <title>Zenith Muzik | Infinite Loop Player</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
     <style>
-        /* RESET & BACKGROUND */
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #000; overflow: hidden; font-family: 'Poppins', sans-serif; color: white; }
+        
+        iframe {
+            position: absolute; top: 50%; left: 50%;
+            width: 100vw; height: 56.25vw;
+            transform: translate(-50%, -50%);
+            pointer-events: none; border: none;
         }
 
-        .background-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /* Pake link lofi-girl biar langsung ada visualnya */
-            background: url('https://wallpapercave.com/wp/wp6165507.jpg') no-repeat center center fixed;
-            background-size: cover;
-            z-index: -1;
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
+            z-index: 1;
         }
 
-        /* CONTAINER TOMBOL DI BAWAH */
-        .main-container {
-            position: absolute;
-            bottom: 40px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .bottom-ui {
+            position: absolute; bottom: 30px; left: 0; right: 0;
+            display: flex; justify-content: center; align-items: flex-end;
             gap: 20px; /* Jarak antar tombol */
-            padding: 0 20px;
-            box-sizing: border-box;
+            z-index: 10;
+            padding: 0 30px;
         }
 
-        /* STYLE SEMUA TOMBOL (UKURAN SAMA PERSIS) */
-        .btn-box {
-            width: 300px; /* Lebar paten */
-            height: 55px;  /* Tinggi paten */
-            background: rgba(45, 45, 45, 0.85); /* Warna abu gelap transparan */
-            border: 2px solid #00ffff; /* Border Cyan khas Zenith */
-            border-radius: 10px;
-            color: white;
-            font-weight: bold;
+        /* STYLE DASAR UNTUK SEMUA TOMBOL (UKURAN SAMA) */
+        .btn-container-equal {
+            width: 320px; /* Lebar paten semua tombol */
+            height: 55px;  /* Tinggi paten semua tombol */
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 242, 255, 0.3);
             display: flex;
-            justify-content: center;
             align-items: center;
-            text-decoration: none;
-            transition: 0.3s;
             overflow: hidden;
-            box-sizing: border-box;
-            font-size: 14px;
-            letter-spacing: 1px;
+            transition: 0.3s;
         }
 
-        /* HOVER EFFECT */
-        .btn-box:hover {
-            background: rgba(0, 255, 255, 0.2);
-            box-shadow: 0 0 15px #00ffff;
-            transform: translateY(-3px);
+        .btn-container-equal:hover {
+            border-color: #00f2ff;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
         }
 
-        /* KHUSUS TOMBOL KANAN (INPUT YT) */
-        .input-group {
+        /* Label di dalam tombol */
+        .btn-label {
+            flex: 1;
+            padding: 0 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: #00f2ff;
+            text-align: center;
+            letter-spacing: 2px;
+            text-decoration: none;
             display: flex;
-            background: rgba(30, 30, 30, 0.9);
-            border: 2px solid #555; /* Warna border input beda biar variasi */
+            align-items: center;
+            justify-content: center;
+            height: 100%;
         }
 
-        .input-group input {
+        /* Tombol Aksi (Warna Cyan/Merah) */
+        .action-btn {
+            height: 100%;
+            padding: 0 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-cyan { background: #00f2ff; color: #000; width: 140px; }
+        .btn-cyan:hover { background: #fff; box-shadow: 0 0 20px #00f2ff; }
+
+        .btn-red { background: #ff0000; color: #fff; width: 100px; }
+        .btn-red:hover { background: #cc0000; }
+
+        /* Khusus Input YouTube */
+        input#videoID {
             flex: 1;
             background: transparent;
             border: none;
             color: white;
             padding: 0 15px;
             outline: none;
-            width: 60%;
+            font-size: 0.75rem;
             height: 100%;
         }
 
-        .input-group button {
-            width: 40%;
-            height: 100%;
-            background: #ff0000; /* Merah YouTube */
-            color: white;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
+        .status-info { 
+            position: absolute; 
+            bottom: 95px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            font-family: 'Orbitron'; 
+            font-size: 0.6rem; 
+            color: #00f2ff; 
+            opacity: 0.8; 
+            text-align: center;
+            width: 100%;
         }
 
-        .input-group button:hover {
-            background: #cc0000;
-        }
-
-        /* RESPONSIF HP */
-        @media (max-width: 950px) {
-            .main-container {
-                flex-direction: column;
-                bottom: 20px;
-            }
-            .btn-box {
-                width: 90%;
-            }
+        @media (max-width: 1000px) {
+            .bottom-ui { flex-direction: column; align-items: center; }
+            .btn-container-equal { width: 90%; }
         }
     </style>
 </head>
 <body>
+    <div class="overlay"></div>
 
-    <div class="background-container"></div>
+    <iframe id="videoPlayer" 
+        src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&controls=0&loop=1&playlist=jfKfPfyJRdk" 
+        allow="autoplay">
+    </iframe>
 
-    <div class="main-container">
+    <audio id="localAudio"></audio>
+
+    <div class="status-info" id="trackName">STANDBY: READY TO VIBE</div>
+
+    <div class="bottom-ui">
         
-        <div class="btn-box">
-            ZENITH MUZIK
+        <div class="btn-container-equal">
+            <div class="btn-label">LOCAL MUZIK</div>
+            <input type="file" id="fileInput" accept="audio/mp3" style="display:none;" multiple onchange="handleFiles(this.files)">
+            <button class="action-btn btn-cyan" onclick="document.getElementById('fileInput').click()">UPLOAD</button>
         </div>
 
-        <a href="https://www.youtube.com/@ZenithMc10" target="_blank" class="btn-box">
-            YOUTUBE ZENITH
-        </a>
+        <div class="btn-container-equal">
+            <a href="https://www.youtube.com/@ZenithMc10" target="_blank" class="btn-label" style="width: 100%;">
+                YOUTUBE ZENITH
+            </a>
+        </div>
 
-        <div class="btn-box input-group">
-            <input type="text" placeholder="YouTube Link..." id="yt-link">
-            <button onclick="playAction()">YT PLAY</button>
+        <div class="btn-container-equal">
+            <input type="text" id="videoID" placeholder="YouTube Link...">
+            <button class="action-btn btn-red" onclick="changeYT()">YT PLAY</button>
         </div>
 
     </div>
 
     <script>
-        function playAction() {
-            var link = document.getElementById('yt-link').value;
-            if (link) {
-                alert("Memutar: " + link);
-                // Masukin kodingan player video kamu di sini
+        const audio = document.getElementById('localAudio');
+        const ytPlayer = document.getElementById('videoPlayer');
+        const trackName = document.getElementById('trackName');
+        
+        let playlist = [];
+        let currentTrackIndex = 0;
+
+        function handleFiles(files) {
+            playlist = Array.from(files);
+            if (playlist.length > 0) {
+                currentTrackIndex = 0;
+                playTrack(currentTrackIndex);
+            }
+        }
+
+        function playTrack(index) {
+            if (index < playlist.length) {
+                ytPlayer.src = ytPlayer.src.replace("mute=0", "mute=1");
+                const file = playlist[index];
+                const url = URL.createObjectURL(file);
+                audio.src = url;
+                audio.play();
+                trackName.innerHTML = `PLAYING ${index + 1}/${playlist.length}: ${file.name.toUpperCase()}`;
+            }
+        }
+
+        audio.onended = function() {
+            currentTrackIndex++;
+            if (currentTrackIndex < playlist.length) {
+                playTrack(currentTrackIndex);
             } else {
-                alert("Masukin link videonya dulu, Zen!");
+                currentTrackIndex = 0;
+                playTrack(currentTrackIndex);
+            }
+        };
+
+        function changeYT() {
+            const input = document.getElementById('videoID').value;
+            let id = "";
+            if (input.includes("v=")) { id = input.split('v=')[1].split('&')[0]; }
+            else if (input.includes("youtu.be/")) { id = input.split('youtu.be/')[1].split('?')[0]; }
+            else { id = input; }
+
+            if(id) {
+                audio.pause(); 
+                playlist = []; 
+                trackName.innerHTML = "YOUTUBE PLAYER MODE";
+                const newSrc = `https://www.youtube.com/embed/${id}?autoplay=1&mute=0&controls=0&loop=1&playlist=${id}`;
+                ytPlayer.src = newSrc;
             }
         }
     </script>
-
 </body>
 </html>
