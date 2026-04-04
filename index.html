@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zenith Muzik | Ultimate Player</title>
+    <title>Zenith Muzik | Infinite Loop Player</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #000; overflow: hidden; font-family: 'Poppins', sans-serif; color: white; }
         
         .video-container {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
-            background: #000;
+            position: absolute; top: 50%; left: 50%;
+            width: 100vw; height: 56.25vw;
+            transform: translate(-50%, -50%);
+            pointer-events: none; border: none;
+            z-index: 0;
         }
 
-        iframe, #localVideo { width: 100vw; height: 56.25vw; border: none; }
-        #localVideo { display: none; width: 100%; height: 100%; object-fit: cover; }
+        iframe, #localVideo { width: 100%; height: 100%; border: none; }
+        #localVideo { display: none; object-fit: cover; pointer-events: none; }
 
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -24,16 +26,14 @@
             z-index: 1; pointer-events: none;
         }
 
-        /* CONTAINER UTAMA DI BAWAH */
         .bottom-ui {
             position: absolute; bottom: 30px; left: 0; right: 0;
             display: flex; justify-content: center; align-items: flex-end;
-            gap: 15px; z-index: 10; padding: 0 20px;
+            gap: 20px; z-index: 10; padding: 0 30px;
         }
 
-        /* UKURAN BOX SAMA SEMUA */
-        .btn-box {
-            width: 320px; height: 60px;
+        .btn-container-equal {
+            width: 320px; height: 55px;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px); border-radius: 12px;
             border: 1px solid rgba(0, 242, 255, 0.3);
@@ -41,44 +41,48 @@
             transition: 0.3s;
         }
 
-        .btn-box:hover { border-color: #00f2ff; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
+        .btn-container-equal:hover {
+            border-color: #00f2ff;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+        }
 
-        /* LABEL & INPUT */
-        .label-text {
-            flex: 1; font-family: 'Orbitron', sans-serif; font-size: 0.65rem;
-            color: #00f2ff; text-align: center; letter-spacing: 1px;
-            display: flex; align-items: center; justify-content: center;
-            text-decoration: none; height: 100%;
+        .btn-label {
+            flex: 1; padding: 0 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem; color: #00f2ff;
+            text-align: center; letter-spacing: 2px;
+            text-decoration: none; display: flex;
+            align-items: center; justify-content: center; height: 100%;
         }
 
         .action-btn {
-            height: 100%; padding: 0 15px; font-family: 'Orbitron', sans-serif;
-            font-size: 0.6rem; font-weight: bold; border: none; cursor: pointer;
+            height: 100%; padding: 0 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem; font-weight: bold;
+            border: none; cursor: pointer; transition: 0.3s;
         }
 
-        .btn-cyan { background: #00f2ff; color: #000; width: 110px; }
-        .btn-red { background: #ff0000; color: #fff; width: 90px; }
+        .btn-cyan { background: #00f2ff; color: #000; width: 140px; }
+        .btn-cyan:hover { background: #fff; box-shadow: 0 0 20px #00f2ff; }
 
-        /* KONTROL MEDIA DI TENGAH */
-        .media-ctrl-group { display: flex; width: 100%; height: 100%; }
-        .ctrl-sub-btn {
-            flex: 1; background: transparent; border: none; color: #00f2ff;
-            font-family: 'Orbitron', sans-serif; font-size: 0.55rem; cursor: pointer;
-            transition: 0.2s; border-right: 1px solid rgba(0, 242, 255, 0.2);
-        }
-        .ctrl-sub-btn:last-child { border-right: none; }
-        .ctrl-sub-btn:hover { background: rgba(0, 242, 255, 0.2); color: white; }
+        .btn-red { background: #ff0000; color: #fff; width: 100px; }
+        .btn-red:hover { background: #cc0000; }
 
         input#videoID {
             flex: 1; background: transparent; border: none; color: white;
-            padding: 0 10px; outline: none; font-size: 0.7rem; height: 100%;
+            padding: 0 15px; outline: none; font-size: 0.75rem; height: 100%;
         }
 
         .status-info { 
-            position: absolute; bottom: 105px; left: 50%; 
+            position: absolute; bottom: 95px; left: 50%; 
             transform: translateX(-50%); font-family: 'Orbitron'; 
             font-size: 0.6rem; color: #00f2ff; opacity: 0.8; 
             text-align: center; width: 100%; z-index: 10;
+        }
+
+        @media (max-width: 1000px) {
+            .bottom-ui { flex-direction: column; align-items: center; }
+            .btn-container-equal { width: 90%; }
         }
     </style>
 </head>
@@ -87,29 +91,27 @@
 
     <div class="video-container">
         <div id="player"></div>
-        <video id="localVideo"></video>
+        <video id="localVideo" muted loop playsinline></video>
     </div>
 
     <audio id="localAudio"></audio>
 
-    <div class="status-info" id="trackName">READY TO VIBE</div>
+    <div class="status-info" id="trackName">STANDBY: READY TO VIBE</div>
 
     <div class="bottom-ui">
-        <div class="btn-box">
-            <div class="label-text">LOCAL FILE</div>
+        <div class="btn-container-equal">
+            <div class="btn-label">LOCAL MUZIK</div>
             <input type="file" id="fileInput" accept="audio/*,video/mp4" style="display:none;" multiple onchange="handleFiles(this.files)">
             <button class="action-btn btn-cyan" onclick="document.getElementById('fileInput').click()">UPLOAD</button>
         </div>
 
-        <div class="btn-box" style="width: 400px;"> <div class="media-ctrl-group">
-                <button class="ctrl-sub-btn" onclick="prevTrack()">PREV</button>
-                <button class="ctrl-btn ctrl-sub-btn" id="playPauseBtn" onclick="togglePlay()">PLAY/PAUSE</button>
-                <button class="ctrl-sub-btn" onclick="nextTrack()">NEXT</button>
-                <a href="https://www.youtube.com/@ZenithMc10" target="_blank" class="label-text" style="border-left: 1px solid rgba(0,242,255,0.3)">YT ZENITH</a>
-            </div>
+        <div class="btn-container-equal">
+            <a href="https://www.youtube.com/@ZenithMc10" target="_blank" class="btn-label" style="width: 100%;">
+                YOUTUBE ZENITH
+            </a>
         </div>
 
-        <div class="btn-box">
+        <div class="btn-box btn-container-equal">
             <input type="text" id="videoID" placeholder="YouTube Link...">
             <button class="action-btn btn-red" onclick="changeYT()">YT PLAY</button>
         </div>
@@ -119,14 +121,12 @@
 
     <script>
         let ytPlayer;
-        let isYTMode = true;
         let playlist = [];
         let currentTrackIndex = 0;
 
         const audio = document.getElementById('localAudio');
         const video = document.getElementById('localVideo');
         const trackName = document.getElementById('trackName');
-        const playPauseBtn = document.getElementById('playPauseBtn');
 
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('player', {
@@ -139,64 +139,40 @@
         function handleFiles(files) {
             playlist = Array.from(files);
             if (playlist.length > 0) {
-                isYTMode = false;
                 currentTrackIndex = 0;
-                playLocal(currentTrackIndex);
+                playTrack(currentTrackIndex);
             }
         }
 
-        function playLocal(index) {
-            const file = playlist[index];
-            const url = URL.createObjectURL(file);
-            ytPlayer.mute();
-            ytPlayer.pauseVideo();
-            document.getElementById('player').style.display = 'none';
+        function playTrack(index) {
+            if (index < playlist.length) {
+                ytPlayer.mute();
+                ytPlayer.pauseVideo();
+                document.getElementById('player').style.display = 'none';
 
-            if (file.type.includes('video')) {
-                audio.pause();
-                video.style.display = 'block';
-                video.src = url;
-                video.play();
-                video.onended = nextTrack;
-            } else {
-                video.pause();
-                video.style.display = 'none';
-                audio.src = url;
-                audio.play();
-                audio.onended = nextTrack;
-            }
-            trackName.innerHTML = `PLAYING: ${file.name.toUpperCase()}`;
-            playPauseBtn.innerHTML = "PAUSE";
-        }
+                const file = playlist[index];
+                const url = URL.createObjectURL(file);
 
-        function togglePlay() {
-            if (isYTMode) {
-                const state = ytPlayer.getPlayerState();
-                if (state == 1) { ytPlayer.pauseVideo(); playPauseBtn.innerHTML = "PLAY"; }
-                else { ytPlayer.playVideo(); playPauseBtn.innerHTML = "PAUSE"; }
-            } else {
-                const target = video.style.display === 'block' ? video : audio;
-                if (!target.paused) { target.pause(); playPauseBtn.innerHTML = "PLAY"; }
-                else { target.play(); playPauseBtn.innerHTML = "PAUSE"; }
+                if (file.type.includes('video')) {
+                    audio.pause();
+                    video.style.display = 'block';
+                    video.src = url;
+                    video.play();
+                    video.onended = nextTrack;
+                } else {
+                    video.pause();
+                    video.style.display = 'none';
+                    audio.src = url;
+                    audio.play();
+                    audio.onended = nextTrack;
+                }
+                trackName.innerHTML = `PLAYING: ${file.name.toUpperCase()}`;
             }
         }
 
         function nextTrack() {
-            if (!isYTMode && playlist.length > 0) {
-                currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-                playLocal(currentTrackIndex);
-            } else if (isYTMode) {
-                ytPlayer.seekTo(0);
-            }
-        }
-
-        function prevTrack() {
-            if (!isYTMode && playlist.length > 0) {
-                currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
-                playLocal(currentTrackIndex);
-            } else if (isYTMode) {
-                ytPlayer.seekTo(0);
-            }
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            playTrack(currentTrackIndex);
         }
 
         function changeYT() {
@@ -206,15 +182,13 @@
             else if (input.includes("youtu.be/")) id = input.split('youtu.be/')[1].split('?')[0];
             else id = input;
 
-            if (id) {
-                isYTMode = true;
+            if(id) {
                 audio.pause(); video.pause();
                 video.style.display = 'none';
                 document.getElementById('player').style.display = 'block';
                 ytPlayer.loadVideoById(id);
                 ytPlayer.unMute();
-                trackName.innerHTML = "YT MODE ACTIVE";
-                playPauseBtn.innerHTML = "PAUSE";
+                trackName.innerHTML = "YOUTUBE PLAYER MODE";
             }
         }
     </script>
