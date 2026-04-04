@@ -22,18 +22,54 @@
             z-index: 1;
         }
 
+        /* MEDIA CONTROLS (BARU) */
+        .media-controls {
+            position: absolute;
+            bottom: 110px; /* Di atas tombol utama */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 15;
+        }
+
+        .ctrl-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.4);
+            color: #00f2ff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            min-width: 80px;
+        }
+
+        .ctrl-btn:hover {
+            background: #00f2ff;
+            color: #000;
+            box-shadow: 0 0 15px #00f2ff;
+        }
+
+        .play-btn {
+            font-weight: bold;
+            min-width: 120px;
+        }
+
+        /* UI BAWAH */
         .bottom-ui {
             position: absolute; bottom: 30px; left: 0; right: 0;
             display: flex; justify-content: center; align-items: flex-end;
-            gap: 20px; /* Jarak antar tombol */
+            gap: 20px;
             z-index: 10;
             padding: 0 30px;
         }
 
-        /* STYLE DASAR UNTUK SEMUA TOMBOL (UKURAN SAMA) */
         .btn-container-equal {
-            width: 320px; /* Lebar paten semua tombol */
-            height: 55px;  /* Tinggi paten semua tombol */
+            width: 320px;
+            height: 55px;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px);
             border-radius: 12px;
@@ -44,76 +80,43 @@
             transition: 0.3s;
         }
 
-        .btn-container-equal:hover {
-            border-color: #00f2ff;
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
-        }
-
-        /* Label di dalam tombol */
         .btn-label {
-            flex: 1;
-            padding: 0 15px;
+            flex: 1; padding: 0 15px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
-            color: #00f2ff;
-            text-align: center;
-            letter-spacing: 2px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
+            font-size: 0.7rem; color: #00f2ff;
+            text-align: center; letter-spacing: 2px;
+            text-decoration: none; display: flex;
+            align-items: center; justify-content: center; height: 100%;
         }
 
-        /* Tombol Aksi (Warna Cyan/Merah) */
         .action-btn {
-            height: 100%;
-            padding: 0 20px;
+            height: 100%; padding: 0 20px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.65rem;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-size: 0.65rem; font-weight: bold;
+            border: none; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center;
         }
 
         .btn-cyan { background: #00f2ff; color: #000; width: 140px; }
-        .btn-cyan:hover { background: #fff; box-shadow: 0 0 20px #00f2ff; }
-
         .btn-red { background: #ff0000; color: #fff; width: 100px; }
-        .btn-red:hover { background: #cc0000; }
 
-        /* Khusus Input YouTube */
         input#videoID {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: white;
-            padding: 0 15px;
-            outline: none;
-            font-size: 0.75rem;
-            height: 100%;
+            flex: 1; background: transparent; border: none; color: white;
+            padding: 0 15px; outline: none; font-size: 0.75rem; height: 100%;
         }
 
         .status-info { 
-            position: absolute; 
-            bottom: 95px; 
-            left: 50%; 
-            transform: translateX(-50%);
-            font-family: 'Orbitron'; 
-            font-size: 0.6rem; 
-            color: #00f2ff; 
-            opacity: 0.8; 
-            text-align: center;
-            width: 100%;
+            position: absolute; bottom: 165px; left: 50%; 
+            transform: translateX(-50%); font-family: 'Orbitron'; 
+            font-size: 0.6rem; color: #00f2ff; opacity: 0.8; 
+            text-align: center; width: 100%; z-index: 10;
         }
 
         @media (max-width: 1000px) {
             .bottom-ui { flex-direction: column; align-items: center; }
-            .btn-container-equal { width: 90%; }
+            .btn-container-equal { width: 95%; }
+            .media-controls { bottom: 250px; }
+            .status-info { bottom: 300px; }
         }
     </style>
 </head>
@@ -129,8 +132,13 @@
 
     <div class="status-info" id="trackName">STANDBY: READY TO VIBE</div>
 
+    <div class="media-controls">
+        <button class="ctrl-btn" onclick="prevTrack()">PREV</button>
+        <button class="ctrl-btn play-btn" id="playPauseBtn" onclick="togglePlay()">PLAY/PAUSE</button>
+        <button class="ctrl-btn" onclick="nextTrack()">NEXT</button>
+    </div>
+
     <div class="bottom-ui">
-        
         <div class="btn-container-equal">
             <div class="btn-label">LOCAL MUZIK</div>
             <input type="file" id="fileInput" accept="audio/mp3" style="display:none;" multiple onchange="handleFiles(this.files)">
@@ -147,13 +155,13 @@
             <input type="text" id="videoID" placeholder="YouTube Link...">
             <button class="action-btn btn-red" onclick="changeYT()">YT PLAY</button>
         </div>
-
     </div>
 
     <script>
         const audio = document.getElementById('localAudio');
         const ytPlayer = document.getElementById('videoPlayer');
         const trackName = document.getElementById('trackName');
+        const playPauseBtn = document.getElementById('playPauseBtn');
         
         let playlist = [];
         let currentTrackIndex = 0;
@@ -167,25 +175,44 @@
         }
 
         function playTrack(index) {
-            if (index < playlist.length) {
+            if (index >= 0 && index < playlist.length) {
                 ytPlayer.src = ytPlayer.src.replace("mute=0", "mute=1");
                 const file = playlist[index];
                 const url = URL.createObjectURL(file);
                 audio.src = url;
                 audio.play();
+                playPauseBtn.innerHTML = "PAUSE";
                 trackName.innerHTML = `PLAYING ${index + 1}/${playlist.length}: ${file.name.toUpperCase()}`;
             }
         }
 
-        audio.onended = function() {
-            currentTrackIndex++;
-            if (currentTrackIndex < playlist.length) {
-                playTrack(currentTrackIndex);
-            } else {
-                currentTrackIndex = 0;
+        function togglePlay() {
+            if (audio.src) {
+                if (audio.paused) {
+                    audio.play();
+                    playPauseBtn.innerHTML = "PAUSE";
+                } else {
+                    audio.pause();
+                    playPauseBtn.innerHTML = "PLAY";
+                }
+            }
+        }
+
+        function nextTrack() {
+            if (playlist.length > 0) {
+                currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
                 playTrack(currentTrackIndex);
             }
-        };
+        }
+
+        function prevTrack() {
+            if (playlist.length > 0) {
+                currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+                playTrack(currentTrackIndex);
+            }
+        }
+
+        audio.onended = nextTrack;
 
         function changeYT() {
             const input = document.getElementById('videoID').value;
@@ -197,6 +224,7 @@
             if(id) {
                 audio.pause(); 
                 playlist = []; 
+                playPauseBtn.innerHTML = "YT MODE";
                 trackName.innerHTML = "YOUTUBE PLAYER MODE";
                 const newSrc = `https://www.youtube.com/embed/${id}?autoplay=1&mute=0&controls=0&loop=1&playlist=${id}`;
                 ytPlayer.src = newSrc;
