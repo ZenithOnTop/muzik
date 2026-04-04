@@ -3,159 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zenith Muzik | Infinite Loop Player</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+    <title>Zenith Muzik - Dashboard</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #000; overflow: hidden; font-family: 'Poppins', sans-serif; color: white; }
-        
-        iframe {
-            position: absolute; top: 50%; left: 50%;
-            width: 100vw; height: 56.25vw;
-            transform: translate(-50%, -50%);
-            pointer-events: none; border: none;
+        /* CSS UNTUK TAMPILAN */
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('background-lofi.jpg') no-repeat center center fixed; /* Ganti dengan file bg kamu */
+            background-size: cover;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; /* Biar tombol di bawah */
         }
 
-        .overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
-            z-index: 1;
+        /* Container Tombol */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px; /* Jarak antar tombol */
+            padding-bottom: 40px; /* Jarak dari bawah layar */
+            width: 100%;
         }
 
-        .bottom-ui {
-            position: absolute; bottom: 30px; left: 30px; right: 30px;
-            display: flex; justify-content: space-between; align-items: flex-end;
-            z-index: 10;
+        /* Base Style untuk SEMUA Tombol (Ukuran Sama Persis) */
+        .custom-btn {
+            width: 280px;  /* Lebar seragam */
+            height: 55px;  /* Tinggi seragam */
+            border-radius: 10px;
+            border: 2px solid #00ffff; /* Border Cyan */
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            font-size: 14px;
+            letter-spacing: 1px;
         }
 
-        .left-panel { display: flex; flex-direction: column; gap: 10px; }
-
-        .brand-bar {
-            display: flex; align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px); border-radius: 12px;
-            border: 1px solid rgba(0, 242, 255, 0.3); overflow: hidden;
+        /* Efek Hover Umum */
+        .custom-btn:hover {
+            background: #00ffff;
+            color: black;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+            transform: translateY(-3px);
         }
 
-        .brand-label {
-            padding: 12px 20px; font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem; color: #00f2ff; letter-spacing: 3px;
-            border-right: 1px solid rgba(0, 242, 255, 0.3);
+        /* Style Khusus Link Youtube (Tengah) */
+        .btn-center {
+            border-color: #00ffff;
         }
 
-        .local-btn {
-            padding: 12px 25px; background: #00f2ff; color: #000;
-            font-family: 'Orbitron', sans-serif; font-size: 0.65rem;
-            font-weight: bold; border: none; cursor: pointer; transition: 0.3s;
-        }
-        .local-btn:hover { background: #fff; box-shadow: 0 0 20px #00f2ff; }
-
-        .status-info { font-family: 'Orbitron'; font-size: 0.5rem; color: #00f2ff; opacity: 0.8; margin-bottom: 5px; }
-
+        /* Style Khusus Input YT (Kanan) */
         .input-group {
-            display: flex; background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px); border-radius: 12px;
-            border: 1px solid rgba(0, 242, 255, 0.3); overflow: hidden;
+            display: flex;
+            overflow: hidden;
+            padding: 0;
+            border-color: #444;
         }
 
-        input#videoID {
-            background: transparent; border: none; color: white;
-            padding: 12px 15px; width: 180px; outline: none; font-size: 0.75rem;
+        .input-group input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding-left: 15px;
+            outline: none;
+            width: 60%;
+            height: 100%;
         }
 
-        .yt-btn {
-            background: #ff0000; border: none; padding: 12px 20px;
-            color: #fff; font-weight: bold; cursor: pointer;
-            font-size: 0.7rem; font-family: 'Orbitron', sans-serif;
+        .input-group button {
+            background: #ff0000; /* Merah YouTube */
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            width: 40%;
+            height: 100%;
+            transition: 0.3s;
+        }
+
+        .input-group button:hover {
+            background: #cc0000;
+        }
+
+        /* Responsif buat HP biar gak hancur */
+        @media (max-width: 900px) {
+            .button-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .custom-btn {
+                width: 90%; /* Kalau di HP jadi lebar */
+            }
         }
     </style>
 </head>
 <body>
-    <div class="overlay"></div>
 
-    <iframe id="videoPlayer" 
-        src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&controls=0&loop=1&playlist=jfKfPfyJRdk" 
-        allow="autoplay">
-    </iframe>
-
-    <audio id="localAudio"></audio>
-
-    <div class="bottom-ui">
-        <div class="left-panel">
-            <div class="status-info" id="trackName">STANDBY: READY TO VIBE</div>
-            <div class="brand-bar">
-                <div class="brand-label">ZENITH MUZIK</div>
-                <input type="file" id="fileInput" accept="audio/mp3" style="display:none;" multiple onchange="handleFiles(this.files)">
-                <button class="local-btn" onclick="document.getElementById('fileInput').click()">UPLOAD PLAYLIST</button>
-            </div>
+    <div class="button-container">
+        
+        <div class="custom-btn">
+            ZENITH MUZIK
         </div>
 
-        <div class="input-group">
-            <input type="text" id="videoID" placeholder="YouTube Link...">
-            <button class="yt-btn" onclick="changeYT()">YT PLAY</button>
+        <a href="https://www.youtube.com/@ZenithMc10" target="_blank" class="custom-btn btn-center">
+            YOUTUBE ZENITH
+        </a>
+
+        <div class="input-group custom-btn">
+            <input type="text" placeholder="YouTube Link..." id="yt-url">
+            <button onclick="playVideo()">YT PLAY</button>
         </div>
+
     </div>
 
     <script>
-        const audio = document.getElementById('localAudio');
-        const ytPlayer = document.getElementById('videoPlayer');
-        const trackName = document.getElementById('trackName');
-        
-        let playlist = [];
-        let currentTrackIndex = 0;
-
-        function handleFiles(files) {
-            playlist = Array.from(files);
-            if (playlist.length > 0) {
-                currentTrackIndex = 0;
-                playTrack(currentTrackIndex);
-            }
-        }
-
-        function playTrack(index) {
-            if (index < playlist.length) {
-                // Matikan suara video background biar fokus ke lagu lokal
-                ytPlayer.src = ytPlayer.src.replace("mute=0", "mute=1");
-                
-                const file = playlist[index];
-                const url = URL.createObjectURL(file);
-                audio.src = url;
-                audio.play();
-                
-                trackName.innerHTML = `PLAYING ${index + 1}/${playlist.length}: ${file.name.toUpperCase()}`;
-            }
-        }
-
-        // LOGIKA AUTO-NEXT & INFINITE LOOP
-        audio.onended = function() {
-            currentTrackIndex++;
-            if (currentTrackIndex < playlist.length) {
-                // Lanjut lagu berikutnya
-                playTrack(currentTrackIndex);
+        // Logika simpel buat tombol YT Play
+        function playVideo() {
+            const url = document.getElementById('yt-url').value;
+            if(url) {
+                alert('Memutar video dari: ' + url);
+                // Tambahin logika player kamu di sini
             } else {
-                // SEMUA LAGU HABIS? BALIK LAGI KE LAGU PERTAMA (LOOP)
-                currentTrackIndex = 0;
-                playTrack(currentTrackIndex);
-                console.log("Playlist Looping Started Again");
-            }
-        };
-
-        function changeYT() {
-            const input = document.getElementById('videoID').value;
-            let id = "";
-            if (input.includes("v=")) { id = input.split('v=')[1].split('&')[0]; }
-            else if (input.includes("youtu.be/")) { id = input.split('youtu.be/')[1].split('?')[0]; }
-            else { id = input; }
-
-            if(id) {
-                audio.pause(); 
-                playlist = []; 
-                trackName.innerHTML = "YOUTUBE PLAYER MODE";
-                // YT mode diset autoplay=1 & mute=0 biar langsung bunyi
-                const newSrc = `https://www.youtube.com/embed/${id}?autoplay=1&mute=0&controls=0&loop=1&playlist=${id}`;
-                ytPlayer.src = newSrc;
+                alert('Masukin dulu link YT-nya, Zen!');
             }
         }
     </script>
+
 </body>
 </html>
